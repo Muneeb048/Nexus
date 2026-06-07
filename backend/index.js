@@ -21,6 +21,10 @@ connectDB();
 const allowedOrigins = ['http://localhost:5173', process.env.FRONTEND_URL];
 
 const app = express();
+
+// Trust the AWS/Nginx proxy for rate limiting to work correctly
+app.set('trust proxy', 1);
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
