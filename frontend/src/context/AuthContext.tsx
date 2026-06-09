@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { User, UserRole, AuthContextType } from '../types';
 import { authAPI, usersAPI, TOKEN_KEY } from '../services/api';
+import { entrepreneurs, investors } from '../data/users';
 import toast from 'react-hot-toast';
 
 // Create Auth Context
@@ -61,20 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Demo accounts bypass for frontend-only deployment
       if (email === 'sarah@techwave.io' && password === 'password123') {
-        const demoUser: User = {
-          id: 'demo-entrepreneur-id',
-          name: 'Sarah Chen',
-          email: 'sarah@techwave.io',
-          role: 'entrepreneur',
-          companyName: 'TechWave AI',
-          industry: 'Artificial Intelligence',
-          location: 'San Francisco, CA',
-          bio: 'Founder of TechWave AI. Building the next generation of predictive analytics tools for enterprise.',
-          createdAt: new Date().toISOString(),
-          isOnline: true,
-          walletBalance: 5000,
-          requires2FA: false
-        };
+        const demoUser: User = entrepreneurs.find(e => e.email === 'sarah@techwave.io') as User;
         
         const demoToken = 'demo-token-entrepreneur';
         localStorage.setItem(TOKEN_KEY, demoToken);
@@ -86,20 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (email === 'michael@vcinnovate.com' && password === 'password123') {
-        const demoUser: User = {
-          id: 'demo-investor-id',
-          name: 'Michael Rodriguez',
-          email: 'michael@vcinnovate.com',
-          role: 'investor',
-          companyName: 'VC Innovate Partners',
-          industry: 'Venture Capital',
-          location: 'New York, NY',
-          bio: 'Managing Partner at VC Innovate. Focusing on early-stage AI and SaaS startups.',
-          createdAt: new Date().toISOString(),
-          isOnline: true,
-          walletBalance: 250000,
-          requires2FA: false
-        };
+        const demoUser: User = investors.find(i => i.email === 'michael@vcinnovate.com') as User;
         
         const demoToken = 'demo-token-investor';
         localStorage.setItem(TOKEN_KEY, demoToken);
