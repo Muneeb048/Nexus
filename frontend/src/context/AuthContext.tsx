@@ -19,6 +19,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const loadUser = async () => {
       const token = localStorage.getItem(TOKEN_KEY);
       if (token) {
+        // Bypass API call for demo tokens
+        if (token.startsWith('demo-token-')) {
+          const storedUser = localStorage.getItem(USER_STORAGE_KEY);
+          if (storedUser) {
+            setUser(JSON.parse(storedUser));
+          }
+          setIsLoading(false);
+          return;
+        }
+
         try {
           const response = await authAPI.getMe();
           const userData = response.data.user;
@@ -44,11 +54,62 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } as User;
   };
 
-  // Login function — calls real API
+  // Login function — calls real API or bypasses for demo
   const login = async (email: string, password: string, role: UserRole): Promise<{requires2FA?: boolean, userId?: string, demoOtp?: string} | void> => {
     setIsLoading(true);
 
     try {
+      // Demo accounts bypass for frontend-only deployment
+      if (email === 'sarah@techwave.io' && password === 'password123') {
+        const demoUser: User = {
+          id: 'demo-entrepreneur-id',
+          name: 'Sarah Chen',
+          email: 'sarah@techwave.io',
+          role: 'entrepreneur',
+          companyName: 'TechWave AI',
+          industry: 'Artificial Intelligence',
+          location: 'San Francisco, CA',
+          bio: 'Founder of TechWave AI. Building the next generation of predictive analytics tools for enterprise.',
+          createdAt: new Date().toISOString(),
+          isOnline: true,
+          walletBalance: 5000,
+          requires2FA: false
+        };
+        
+        const demoToken = 'demo-token-entrepreneur';
+        localStorage.setItem(TOKEN_KEY, demoToken);
+        setUser(demoUser);
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(demoUser));
+        toast.success('Logged in to demo account!');
+        setIsLoading(false);
+        return;
+      }
+
+      if (email === 'michael@vcinnovate.com' && password === 'password123') {
+        const demoUser: User = {
+          id: 'demo-investor-id',
+          name: 'Michael Rodriguez',
+          email: 'michael@vcinnovate.com',
+          role: 'investor',
+          companyName: 'VC Innovate Partners',
+          industry: 'Venture Capital',
+          location: 'New York, NY',
+          bio: 'Managing Partner at VC Innovate. Focusing on early-stage AI and SaaS startups.',
+          createdAt: new Date().toISOString(),
+          isOnline: true,
+          walletBalance: 250000,
+          requires2FA: false
+        };
+        
+        const demoToken = 'demo-token-investor';
+        localStorage.setItem(TOKEN_KEY, demoToken);
+        setUser(demoUser);
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(demoUser));
+        toast.success('Logged in to demo account!');
+        setIsLoading(false);
+        return;
+      }
+
       const response = await authAPI.login({ email, password, role });
       
       if (response.data.requires2FA) {
